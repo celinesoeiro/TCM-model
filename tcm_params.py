@@ -64,7 +64,7 @@ def TCM_model_parameters():
     
     ms = 1000                               # 1 second = 1000 miliseconds
     dt = 100/ms                             # time step of 10 ms
-    simulation_time = 15                    # simulation time in seconds
+    simulation_time = 3                    # simulation time in seconds
     samp_freq = int(ms/dt)                  # sampling frequency in Hz
     T = int((simulation_time)*ms)           # Simulation time in ms with 1 extra second to reach the steady state and trash later
     sim_steps = int(T/dt)                   # number of simulation steps
