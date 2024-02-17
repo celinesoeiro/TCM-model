@@ -375,9 +375,8 @@ def TCM_model_parameters():
                                                 current_value=None)
     
         # Mudar I_E e I_I para gerar um array e colocar o I_PS_x para receber esse array * o peso
-        I_E = tm_synapse_poisson_eq(spikes = spike_PS, 
+        I_E = tm_synapse_poisson_eq(spikes = spike_PS,  
                                     sim_steps = sim_steps, 
-                                    t_delay = td_synapse, 
                                     dt = dt, 
                                     t_f = synapse_params_excitatory['t_f'], 
                                     t_d = synapse_params_excitatory['t_d'], 
@@ -388,7 +387,6 @@ def TCM_model_parameters():
     
         I_I = tm_synapse_poisson_eq(spikes = spike_PS, 
                                     sim_steps = sim_steps, 
-                                    t_delay = td_synapse, 
                                     dt = dt, 
                                     t_f = synapse_params_inhibitory['t_f'], 
                                     t_d = synapse_params_inhibitory['t_d'], 
