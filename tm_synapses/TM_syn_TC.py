@@ -2,9 +2,6 @@ from model_functions import homogeneous_poisson, tm_syn_excit_dep, tm_syn_excit_
 
 import numpy as np
 from random import seed, random
-from matplotlib import pyplot as plt
-import seaborn as sns
-sns.set_theme()
 
 seed(1)
 random_factor = random()
@@ -15,24 +12,24 @@ bin_size = 1        # bin size
 tmax = 1 * ms       # the total lenght of the spike train
 dt = rate
 
+neuron_type = "Thalamo-Cortical (TC)"
+
 # Izhikevich neuron model
 vp = 30     # voltage peak
 vr = -65    # voltage threshold
-
-neuron_type = "Fast Spiking (FS)"
-
-a = 0.1 + 0.008*random_factor
-b = 0.2 - 0.005*random_factor
+a = 0.02 + 0.008*random_factor
+b = 0.25 - 0.005*random_factor
 c = -65 
-d = 2 
+d = 0.05 
 
 W = 1e2
+
 # =============================================================================
 # Poisson spike gen
 # =============================================================================
-spikes = homogeneous_poisson(rate, tmax, bin_size) 
-time = np.arange(1,len(spikes)) * bin_size 
-sim_steps = len(spikes)
+spikes = homogeneous_poisson(rate, tmax, bin_size)
+sim_steps = len(spikes) 
+time = np.arange(1, sim_steps) * bin_size 
 
 # =============================================================================
 # EXCITATORY - DEPRESSION

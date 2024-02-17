@@ -1,8 +1,3 @@
-"""
-@author: Celine Soeiro
-@description: TCM functions
-"""
-
 import numpy as np
 from scipy.signal  import butter, lfilter, welch
 from math import pi

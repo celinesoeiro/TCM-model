@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat May 13 10:26:45 2023
-
-@author: Avell
-"""
 from tcm_params import TCM_model_parameters
 
 import math

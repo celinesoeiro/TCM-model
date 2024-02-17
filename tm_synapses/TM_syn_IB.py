@@ -2,12 +2,10 @@ from model_functions import homogeneous_poisson, tm_syn_excit_dep, tm_syn_excit_
 
 import numpy as np
 from random import seed, random
-from matplotlib import pyplot as plt
-import seaborn as sns
-sns.set_theme()
 
 seed(1)
 random_factor = random()
+
 
 ms = 1000           # 1ms
 rate = 20 * 1/ms    # spike rate 
@@ -19,12 +17,12 @@ dt = rate
 vp = 30     # voltage peak
 vr = -65    # voltage threshold
 
-neuron_type = "Fast Spiking (FS)"
+neuron_type = "Instrisically Bursting (IB)"
 
-a = 0.1 + 0.008*random_factor
-b = 0.2 - 0.005*random_factor
-c = -65 
-d = 2 
+a = 0.02 
+b = 0.2 
+c = -55 + 15*random_factor**2
+d = 4 - 0.6*random_factor**2
 
 W = 1e2
 # =============================================================================
@@ -53,3 +51,5 @@ tm_syn_inib_dep(sim_steps, dt, time, a, b, c, d, vp, vr, spikes, W, neuron_type)
 # INHIBITORY - FACILITATION
 # =============================================================================
 tm_syn_inib_fac(sim_steps, time, dt, a, b, c, d, vp, vr, spikes, W, neuron_type)
+
+
