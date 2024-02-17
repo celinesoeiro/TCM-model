@@ -16,10 +16,10 @@ Use the model parameters file to change the model parameters like simulation ove
 This model was accomplished in steps, that's why there are files named step-1-*, step-2-*, step-3-* and step-4*. Below you will find a description of what each step contains:
 
 ### Step 1
-- TC model with layer D and Cortical Interneurons with thalamic input simulated by an spike generator modeled by Poisson (step-1-cortical-D).
+- TC model with layer D and Cortical Interneurons with thalamic input simulated by an spike generator modeled by Poisson (step-1-cortical).
 
 ### Step 2
-- Step 1 with layer S neurons (step-2-DS)
+- Step 1 with layer S neurons (step-2-cortical)
 
 ### Step 3
 - Step 2 with layer M neurons (step-3-cortical).
