@@ -1,16 +1,21 @@
-from tcm_params import TCM_model_parameters, coupling_matrix_normal, coupling_matrix_PD
-from model_plots import plot_heat_map, plot_raster, plot_BP_filter, plot_PSD
-from model_functions import LFP, butter_bandpass_filter, PSD
+"""
+Created on Mon Feb  5 22:03:25 2024
 
-from TR_nucleus_PD import TR_nucleus
-from TC_nucleus_PD import TC_nucleus
-from S_nucleus_PD import S_nucleus
-from M_nucleus_PD import M_nucleus
-from D_nucleus_PD import D_nucleus
-from CI_nucleus_PD import CI_nucleus
-
+@author: celinesoeiro
+"""
 import numpy as np
 import pandas as pd
+
+from tcm_params import TCM_model_parameters, coupling_matrix_normal, coupling_matrix_PD
+from model_plots import plot_heat_map, plot_raster, plot_I_DBS,plot_BP_filter, plot_PSD_DBS, plot_LFP
+from model_functions import LFP, butter_bandpass_filter, PSD, I_DBS
+
+from TR_nucleus_DBS import TR_nucleus
+from TC_nucleus_DBS import TC_nucleus
+from S_nucleus_DBS import S_nucleus
+from M_nucleus_DBS import M_nucleus
+from D_nucleus_DBS import D_nucleus
+from CI_nucleus_DBS import CI_nucleus
 
 # =============================================================================
 # INITIAL VALUES
@@ -49,10 +54,21 @@ vr = TCM_model_parameters()['vr']
 dt = TCM_model_parameters()['dt']
 sim_time = TCM_model_parameters()['simulation_time']
 T = TCM_model_parameters()['simulation_time_ms']
+fs = TCM_model_parameters()['sampling_frequency']
+
+dbs = TCM_model_parameters()['dbs'][1]
+dbs_freq = TCM_model_parameters()['dbs_freq']
 
 sim_steps = TCM_model_parameters()['simulation_steps']
 time_v = TCM_model_parameters()['time_vector']
 time = np.arange(1, sim_steps)
+
+t_f_E = syn_params['t_f']
+t_d_E = syn_params['t_d']
+t_s_E = syn_params['t_s']
+U_E = syn_params['U']
+A_E = syn_params['distribution']
+td_syn = TCM_model_parameters()['time_delay_synapse']
 
 # =============================================================================
 # COUPLING MATRIXES
@@ -188,6 +204,18 @@ R_TR_syn = np.ones((1, p))
 I_TR_syn = np.zeros((1, p))
 
 tr_aux = 0
+
+# =============================================================================
+# DBS
+# =============================================================================
+# I_dbs = np.zeros((1, sim_steps))
+print('-- Setting the DBS')
+I_dbs = I_DBS(sim_steps, dt, fs, dbs_freq, td_syn, t_f_E, t_d_E, U_E, t_s_E, A_E)
+
+plot_I_DBS(I_dbs[0], 'I DBS pre sinaptica')
+
+plot_I_DBS(I_dbs[1], 'I DBS pos sinaptica')
+
 # =============================================================================
 # MAIN
 # =============================================================================
@@ -196,32 +224,32 @@ for t in time:
 # =============================================================================
 #     TR
 # =============================================================================
-    v_TR, u_TR, PSC_TR, u_TR_syn, I_TR_syn, R_TR_syn, tr_aux = TR_nucleus(t, v_TR, u_TR, AP_TR, PSC_TR, PSC_TC, PSC_CI, PSC_D_T, PSC_M, PSC_S, u_TR_syn, R_TR_syn, I_TR_syn, tr_aux)
+    v_TR, u_TR, PSC_TR, u_TR_syn, I_TR_syn, R_TR_syn, tr_aux = TR_nucleus(t, v_TR, u_TR, AP_TR, PSC_TR, PSC_TC, PSC_CI, PSC_D_T, PSC_M, PSC_S, u_TR_syn, R_TR_syn, I_TR_syn, tr_aux, I_dbs[1])
     LFP_TR_before[tr_aux] = PSC_TR[0]
 # =============================================================================
 #     TC
 # =============================================================================
-    v_TC, u_TC, PSC_TC, u_TC_syn, I_TC_syn, R_TC_syn, PSC_T_D = TC_nucleus(t, v_TC, u_TC, AP_TC, PSC_TC, PSC_S, PSC_M, PSC_D_T, PSC_TR, PSC_CI, PSC_T_D, R_TC_syn, u_TC_syn, I_TC_syn)
+    v_TC, u_TC, PSC_TC, u_TC_syn, I_TC_syn, R_TC_syn, PSC_T_D = TC_nucleus(t, v_TC, u_TC, AP_TC, PSC_TC, PSC_S, PSC_M, PSC_D_T, PSC_TR, PSC_CI, PSC_T_D, R_TC_syn, u_TC_syn, I_TC_syn, I_dbs[1])
         
 # =============================================================================
 #     S
 # =============================================================================
-    v_S, u_S, PSC_S, u_S_syn, I_S_syn, R_S_syn = S_nucleus(t, v_S, u_S, AP_S, PSC_S, PSC_M, PSC_D, PSC_CI, PSC_TC, PSC_TR, u_S_syn, R_S_syn, I_S_syn)
+    v_S, u_S, PSC_S, u_S_syn, I_S_syn, R_S_syn = S_nucleus(t, v_S, u_S, AP_S, PSC_S, PSC_M, PSC_D, PSC_CI, PSC_TC, PSC_TR, u_S_syn, R_S_syn, I_S_syn, I_dbs[1])
         
 # =============================================================================
 #     M
 # =============================================================================
-    v_M, u_M, PSC_M, u_M_syn, I_M_syn, R_M_syn = M_nucleus(t, v_M, u_M, AP_M, PSC_M, PSC_S, PSC_D, PSC_CI, PSC_TC, PSC_TR, u_M_syn, R_M_syn, I_M_syn)
+    v_M, u_M, PSC_M, u_M_syn, I_M_syn, R_M_syn = M_nucleus(t, v_M, u_M, AP_M, PSC_M, PSC_S, PSC_D, PSC_CI, PSC_TC, PSC_TR, u_M_syn, R_M_syn, I_M_syn, I_dbs[1])
             
 # =============================================================================
 #     D
 # =============================================================================
-    v_D, u_D, PSC_D, u_D_syn, I_D_syn, R_D_syn, PSC_D_T = D_nucleus(t, v_D, u_D, AP_D, PSC_D, PSC_S, PSC_M, PSC_T_D, PSC_CI, PSC_TR, PSC_D_T, u_D_syn, R_D_syn, I_D_syn)
+    v_D, u_D, PSC_D, u_D_syn, I_D_syn, R_D_syn, PSC_D_T = D_nucleus(t, v_D, u_D, AP_D, PSC_D, PSC_S, PSC_M, PSC_T_D, PSC_CI, PSC_TR, PSC_D_T, u_D_syn, R_D_syn, I_D_syn, I_dbs)
         
 # =============================================================================
 #     CI
 # =============================================================================
-    v_CI, u_CI, PSC_CI, u_CI_syn, I_CI_syn, R_CI_syn = CI_nucleus(t, v_CI, u_CI, AP_CI, PSC_CI, PSC_D, PSC_M, PSC_S, PSC_TC, PSC_TR, u_CI_syn, R_CI_syn, I_CI_syn)
+    v_CI, u_CI, PSC_CI, u_CI_syn, I_CI_syn, R_CI_syn = CI_nucleus(t, v_CI, u_CI, AP_CI, PSC_CI, PSC_D, PSC_M, PSC_S, PSC_TC, PSC_TR, u_CI_syn, R_CI_syn, I_CI_syn, I_dbs[1])
     
 # =============================================================================
 # PLOTS
@@ -274,33 +302,29 @@ plot_raster(
             spike_times_S = AP_S
             )
 
-print("-- Done!")
-
 # =============================================================================
 # Signal analysis
 # =============================================================================
 print("-- Signal analysis")
 
-fs = TCM_model_parameters()['sampling_frequency']
-
 ## Getting the Local Field Potential
-LFP_D_PD = LFP(PSC_D[0], PSC_CI[0])
+LFP_D_DBS_130 = LFP(PSC_D[0], PSC_CI[0])
+plot_LFP(LFP_D_DBS_130, 'LFP - 80Hz')
 
-## Bandpass filtering the LFP to get the beta waves
+## Bandpass filtering the LFP to get thse beta waves
 lowcut = 13
 highcut = 30
-beta_waves_PD_full = butter_bandpass_filter(LFP_D_PD, lowcut, highcut, fs)
-plot_BP_filter(beta_waves_PD_full, lowcut, highcut)
+PSD_signal_130 = LFP_D_DBS_130[49999:100000]
 
-# Power Spectral Density
-f_PD_full, S_PD_full = PSD(beta_waves_PD_full, fs)
-plot_PSD(f_PD_full, S_PD_full)
+beta_waves_DBS_130_full = butter_bandpass_filter(LFP_D_DBS_130, lowcut, highcut, fs)
+plot_BP_filter(beta_waves_DBS_130_full, lowcut, highcut)
+f_DBS_130_full, S_DBS_130_full = PSD(beta_waves_DBS_130_full, fs)
+plot_PSD_DBS(f_DBS_130_full, S_DBS_130_full, dbs_freq)
 
-PSD_signal_PD = LFP_D_PD[49999:100000]
-beta_waves_PD = butter_bandpass_filter(PSD_signal_PD, lowcut, highcut, fs)
+beta_waves_DBS_130 = butter_bandpass_filter(PSD_signal_130, lowcut, highcut, fs)
 # Power Spectral Density
-f_DBS_PD, S_DBS_PD = PSD(beta_waves_PD, fs)
-plot_PSD(f_DBS_PD, S_DBS_PD)
+f_DBS_130, S_DBS_130 = PSD(beta_waves_DBS_130, fs)
+plot_PSD_DBS(f_DBS_130, S_DBS_130, dbs_freq)
 
 print("-- Done!")
 
@@ -309,44 +333,88 @@ print("-- Done!")
 # sns.set()
 
 # time_arr = np.arange(0, sim_steps + 1, fs, dtype=int)
-# xlabels = [f'{x/fs}' for x in time_arr]
+# xlabels = [f'{int(x/fs)}' for x in time_arr]
 
 # plt.figure(figsize=(30, 10))
 # plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_PD)
-# plt.plot(beta_waves_normal)
-# plt.legend(['Parkinsoniano', 'Normal'], fontsize=16)
+# plt.plot(beta_waves_DBS_130_full)
+# # plt.plot(beta_waves_normal)
+# plt.annotate('begin DBS',xy=(50000,2000),xytext=(55000,2500),
+#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
+#               ,horizontalalignment='center', fontsize=16)
+# plt.annotate('end DBS',xy=(100000,2000),xytext=(105000,2500),
+#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
+#               ,horizontalalignment='center', fontsize=16)
+# plt.legend(['Parkinsonian - DBS 130Hz', 'Normal'], fontsize=16)
+# plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
+# plt.ylabel('potential (uV)')
+# plt.xlabel('time (s)')
+# plt.show()
+
+# plt.figure(figsize=(30, 10))
+# plt.xticks(time_arr, labels=xlabels)
+# plt.plot(beta_waves_DBS_180_full)
+# # plt.plot(beta_waves_normal)
+# plt.annotate('begin DBS',xy=(50000,2000),xytext=(55000,2500),
+#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
+#               ,horizontalalignment='center', fontsize=16)
+# plt.annotate('end DBS',xy=(100000,2000),xytext=(105000,2500),
+#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
+#               ,horizontalalignment='center', fontsize=16)
+# plt.legend(['Parkinsonian - DBS 180Hz', 'Normal'], fontsize=16)
+# plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
+# plt.ylabel('potential (uV)')
+# plt.xlabel('time (s)')
+# plt.show()
+
+# plt.figure(figsize=(30, 10))
+# plt.xticks(time_arr, labels=xlabels)
+# plt.plot(beta_waves_PD, color="red")
+# plt.plot(beta_waves_DBS_180, color="steelblue")
+# plt.legend(['parkinsoniano', 'DBS - 180Hz'], fontsize=16)
 # plt.title(f'LFP filtrado - ${lowcut} - ${highcut}', fontsize=16)
 # plt.ylabel('potencial (uV)')
 # plt.xlabel('tempo (s)')
 # plt.show()
 
-# time_arr = np.arange(0, sim_steps + 1, fs, dtype=int)
-# xlabels = [f'{x/fs}' for x in time_arr]
+# # from matplotlib import pyplot as plt
+# # import seaborn as sns
+# # sns.set()
 
-# plt.figure(figsize=(30, 10))
-# plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_PD)
-# plt.plot(beta_waves_DBS)
-# plt.legend(['Parkinsoniano', 'DBS'], fontsize=16)
-# plt.title(f'LFP filtrado - ${lowcut} - ${highcut}', fontsize=16)
-# plt.ylabel('potencial (uV)')
-# plt.xlabel('tempo (s)')
-# plt.show()
-
-
-# x_arr = np.arange(0, 101, 5)
+# x_arr = np.arange(0, 81, 5)
 
 # plt.figure(figsize=(21, 10))
-# plt.semilogy(f_PD, S_PD)
-# plt.semilogy(f, S)
-# plt.semilogy(f_DBS, S_DBS)
-# plt.legend(['Parkinsoniano', 'Normal', 'DBS'], fontsize=22)
+# plt.semilogy(f_PD, S_PD, color="steelblue")
+# plt.semilogy(f_normal, S_normal, color="darkorange")
+# plt.semilogy(f_DBS_80, S_DBS_80, color="green")
+# plt.semilogy(f_DBS_130, S_DBS_130, color="red")
+# plt.semilogy(f_DBS_180, S_DBS_180, color="hotpink")
+# plt.legend([ 'Parkinsonian', 'Normal', 'DBS - 80Hz', 'DBS - 130Hz', 'DBS - 180Hz'], fontsize=22)
 # plt.ylim([1e-3, 1e8])
-# plt.xlim([0, 100])
+# plt.xlim([0, 80])
+# plt.xticks(x_arr)
+# plt.xlabel('frequency (Hz)')
+# plt.ylabel('PSD [V**2/Hz]')
+# plt.title('PSD', fontsize=22)
+# plt.show()
+
+# x_arr = np.arange(0, 81, 5)
+
+# plt.figure(figsize=(21, 10))
+# # plt.semilogy(f_PD, S_PD, color="steelblue")
+# # plt.semilogy(f_normal, S_normal, color="darkorange")
+# plt.semilogy(f_DBS_80_full, S_DBS_80_full, color="green")
+# plt.semilogy(f_DBS_130_full, S_DBS_130_full, color="red")
+# plt.semilogy(f_DBS_180_full, S_DBS_180_full, color="hotpink")
+# # plt.legend(['Parkinsonian', 'Normal', 'DBS - 80Hz', 'DBS - 130Hz', 'DBS - 180Hz'], fontsize=22)
+# plt.legend(['DBS 80Hz', 'DBS 130Hz', 'DBS 180Hz'], fontsize=22)
+# plt.ylim([1e-3, 1e8])
+# plt.xlim([0, 80])
 # plt.xticks(x_arr)
 # plt.xlabel('frequencia (Hz)')
 # plt.ylabel('PSD [V**2/Hz]')
 # plt.title('PSD', fontsize=22)
 # plt.show()
+
+
 
