@@ -1,5 +1,7 @@
 # Thalamo Cortical Model with DBS simulation
 
+![MTC_DBS_en](https://github.com/celinesoeiro/model-TC/assets/52112166/7d24394c-82b5-44b2-a17d-419ac2b28409)
+
 ## What is in it?
 - Izhikevich neuron model (izhikevich_neuron folder)
 - Tsodkys and Markram synaptic model (tm_synapses folder)
@@ -27,7 +29,15 @@ This model was accomplished in steps, that's why there are files named step-1-*,
 ### Step 4
 - Step 3 with both Thalamo Cortical Nucleus and Thalamic Reticular Nucleus. 
 - This is the complete model.
-- This step has 2 files, one simulating a normal condition (step-4-thalamus-normal) and another one simulating a parkinsonian condition (step-4-thalamus-PD).
+- This step has 2 files, one simulating a normal condition (step-4-tc-normal) and another one simulating a parkinsonian condition (step-4-tc-PD).
 
+### DBS
+- Go to tcm_params file and switch the dbs_freq variable to the desired DBS frequency
+- Your simulation time should be a multiple of 3 (because the stimulus is applied in 1/3 of the total time)
+- Save changes in the tcm_params file and
+- Run the DBS file
 
+## Takes on signal analysis
+- To obtain the PSD comparison between normal, PD and DBS states you should use an IDE that allows variable storage, like [Spyder](https://www.spyder-ide.org/).
+- First you need to run the normal condition file, then the PD condition file, then you should run the DBS file.
 
