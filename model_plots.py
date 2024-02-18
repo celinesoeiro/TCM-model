@@ -11,6 +11,11 @@ dt = TCM_model_parameters()['dt']
 fs = TCM_model_parameters()['sampling_frequency']
 sim_steps = TCM_model_parameters()['simulation_steps']
 
+lowcut = TCM_model_parameters()['beta_low']
+highcut = TCM_model_parameters()['beta_high']
+dbs_begin = TCM_model_parameters()['dbs_begin']
+dbs_end = TCM_model_parameters()['dbs_end']
+
 time_arr = np.arange(0, sim_steps + 1, fs, dtype=int)
 xlabels = [f'{int(x/fs)}' for x in time_arr]
 
@@ -18,7 +23,7 @@ def plot_heat_map(matrix_normal, matrix_PD):
     fig, (ax1, ax2) = plt.subplots(1,2, figsize=(17,7))
     
     fig.subplots_adjust(wspace=0.3)
-    fig.suptitle('Matriz de conexão')
+    fig.suptitle('Conection matrix')
     
     sns.heatmap(matrix_normal, 
                 vmin=-1, vmax=1, 
@@ -31,7 +36,7 @@ def plot_heat_map(matrix_normal, matrix_PD):
                 )
     ax1.set(xlabel="", ylabel="")
     ax1.xaxis.tick_top()
-    ax1.set_title('Condição normal')
+    ax1.set_title('normal condition')
     
     sns.heatmap(matrix_PD, 
                 vmin=-1, vmax=1, 
@@ -44,7 +49,7 @@ def plot_heat_map(matrix_normal, matrix_PD):
                 )
     ax2.set(xlabel="", ylabel="")
     ax2.xaxis.tick_top()
-    ax2.set_title('Condição parkinsoniana')
+    ax2.set_title('parkinsonian condition')
     
     plt.show()
     
@@ -66,7 +71,7 @@ def plot_voltages(n_neurons, voltage, title, neuron_types):
         
         neuron_type = neuron_types[i]
         
-        axs[row,column].set_title(f'NEURONIO {i + 1} - {neuron_type}')
+        axs[row,column].set_title(f'neuron {i + 1} - {neuron_type}')
         axs[row,column].plot(voltage[i])
     
     plt.show()
@@ -78,9 +83,9 @@ def showPSD(signal, n):
     plt.ylim([1e-3, 1e2])
     plt.xlim([0, 50])
     plt.xticks([0,5,10,15,20,25,30,35,40,45,50])
-    plt.xlabel('frequencia [Hz]')
+    plt.xlabel('frequency [Hz]')
     plt.ylabel('PSD [V**2/Hz]')
-    plt.title(f'neuronio - {n}')
+    plt.title(f'neuron - {n}')
     plt.show()
     
 def plot_LFP(lfp, title):
@@ -93,7 +98,7 @@ def plot_LFP(lfp, title):
     plt.plot(new_time, lfp)
     
     # Set the x-axis label
-    plt.xlabel('Tempo')
+    plt.xlabel('Time')
     plt.ylabel('LFP')
     
     # Show the plot
@@ -126,18 +131,37 @@ def plot_I_DBS(I, title):
     plt.figure()
     plt.title(f'{title}')
     plt.xticks(time_arr, labels=xlabels)
-    plt.ylabel('corrente (mA)')
-    plt.xlabel('tempo (s)')
+    plt.ylabel('current (mA)')
+    plt.xlabel('time (s)')
     plt.plot(I)
     plt.show()
     
-def plot_BP_filter(signal, lowcut, highcut):
+def plot_BP_filter(signal, dbs_freq):
+    x_offset = dbs_begin/2
+    max_value = signal.max()
+    y_pos_begin = max_value - max_value/5
+    y_pos_end = max_value - max_value/4
+
     plt.figure(figsize=(30, 10))
     plt.xticks(time_arr, labels=xlabels)
     plt.plot(signal)
-    plt.title(f'Sinal filtrado em - ${lowcut} - ${highcut}')
-    plt.ylabel('potencial (uV)')
-    plt.xlabel('tempo (s)')
+    plt.annotate('begin DBS', xy=(dbs_begin, y_pos_begin), xytext=(dbs_begin + x_offset, y_pos_end),
+                  arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
+                  ,horizontalalignment='center', fontsize=16)
+    plt.annotate('end DBS', xy=(dbs_end, y_pos_begin), xytext=(dbs_end + x_offset, y_pos_end),
+                  arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
+                  ,horizontalalignment='center', fontsize=16)
+    plt.legend([f'Parkinsonian - DBS {dbs_freq}', 'Normal'], fontsize=16)
+    plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
+    plt.ylabel('potential (uV)')
+    plt.xlabel('time (s)')
+    plt.show()
+    
+def plot_BP_filter_normal(signal):
+    plt.figure(figsize=(30, 10))
+    plt.xticks(time_arr, labels=xlabels)
+    plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
+    plt.plot(signal)
     plt.show()
     
 def plot_PSD_DBS(f, S, dbs_freq):
@@ -148,7 +172,7 @@ def plot_PSD_DBS(f, S, dbs_freq):
     plt.ylim([1e-3, 1e8])
     plt.xlim([0, 100])
     plt.xticks(x_arr)
-    plt.xlabel('frequencia (Hz)')
+    plt.xlabel('frequency (Hz)')
     plt.ylabel('PSD [V**2/Hz]')
     plt.title(f'PSD - {dbs_freq}')
     plt.show()
@@ -161,7 +185,7 @@ def plot_PSD(f, S):
     plt.ylim([1e-3, 1e8])
     plt.xlim([0, 100])
     plt.xticks(x_arr)
-    plt.xlabel('frequencia (Hz)')
+    plt.xlabel('frequency (Hz)')
     plt.ylabel('PSD [V**2/Hz]')
     plt.title('PSD')
     plt.show()
@@ -184,8 +208,8 @@ def layer_raster_plot(n, AP, sim_steps, layer_name, dt):
     ax1.set(
         axisbelow=True,  # Hide the grid behind plot objects
         title=f'Raster plot - {layer_name}',
-        xlabel='t (s)',
-        ylabel='neuronios',
+        xlabel='time (s)',
+        ylabel='neurons',
     )
     
     y_labels_vec = np.arange(0, n + 1, 1, dtype=int)
@@ -247,7 +271,7 @@ def plot_raster(
     
     spikes = np.concatenate([spike_TR_clean, spike_TC_clean, spike_CI_clean, spike_D_clean, spike_M_clean, spike_S_clean])
     
-    fig, ax1 = plt.subplots(figsize=(21, 10))
+    fig, ax1 = plt.subplots(figsize=(10, 8))
     fig.canvas.manager.set_window_title('Raster plot')
     fig.subplots_adjust(left=0.075, right=0.95, top=0.9, bottom=0.25)
         
@@ -261,8 +285,8 @@ def plot_raster(
     ax1.set(
         axisbelow=True,  # Hide the grid behind plot objects
         title='Raster plot',
-        xlabel='t (s)',
-        ylabel='neuronios',
+        xlabel='time (s)',
+        ylabel='neurons',
     )
         
     for i in range(n_total):  
@@ -302,14 +326,13 @@ def plot_raster(
     multiplier = 1000
     lim_down = chop_till
     lim_up = sim_steps + multiplier*dt
-    new_arr = np.arange(lim_down, lim_up, multiplier)
+    # new_arr = np.arange(lim_down, lim_up, multiplier)
     
     # Transforming flot array to int array
-    x_ticks = list(map(int,new_arr/multiplier))
+    # x_ticks = list(map(int,new_arr/multiplier))
     
     ax1.set_xlim(lim_down, lim_up)
-    ax1.set_xticks(new_arr)
-    ax1.set_xticklabels(x_ticks)
+    ax1.set_xticks(time_arr, labels=xlabels)
     
     # TR neurons
     ax1.hlines(y = TR_lim, xmin=0, xmax=sim_steps, color = 'b', linestyle='solid' )

@@ -58,6 +58,10 @@ fs = TCM_model_parameters()['sampling_frequency']
 
 dbs = TCM_model_parameters()['dbs'][1]
 dbs_freq = TCM_model_parameters()['dbs_freq']
+lowcut = TCM_model_parameters()['beta_low']
+highcut = TCM_model_parameters()['beta_high']
+dbs_begin = TCM_model_parameters()['dbs_begin']
+dbs_end = TCM_model_parameters()['dbs_end']
 
 sim_steps = TCM_model_parameters()['simulation_steps']
 time_v = TCM_model_parameters()['time_vector']
@@ -312,9 +316,7 @@ LFP_D_DBS_130 = LFP(PSC_D[0], PSC_CI[0])
 plot_LFP(LFP_D_DBS_130, 'LFP - 80Hz')
 
 ## Bandpass filtering the LFP to get thse beta waves
-lowcut = 13
-highcut = 30
-PSD_signal_130 = LFP_D_DBS_130[49999:100000]
+PSD_signal_130 = LFP_D_DBS_130[dbs_begin:dbs_end]
 
 beta_waves_DBS_130_full = butter_bandpass_filter(LFP_D_DBS_130, lowcut, highcut, fs)
 plot_BP_filter(beta_waves_DBS_130_full, lowcut, highcut)
@@ -327,94 +329,6 @@ f_DBS_130, S_DBS_130 = PSD(beta_waves_DBS_130, fs)
 plot_PSD_DBS(f_DBS_130, S_DBS_130, dbs_freq)
 
 print("-- Done!")
-
-# from matplotlib import pyplot as plt
-# import seaborn as sns
-# sns.set()
-
-# time_arr = np.arange(0, sim_steps + 1, fs, dtype=int)
-# xlabels = [f'{int(x/fs)}' for x in time_arr]
-
-# plt.figure(figsize=(30, 10))
-# plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_DBS_130_full)
-# # plt.plot(beta_waves_normal)
-# plt.annotate('begin DBS',xy=(50000,2000),xytext=(55000,2500),
-#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
-#               ,horizontalalignment='center', fontsize=16)
-# plt.annotate('end DBS',xy=(100000,2000),xytext=(105000,2500),
-#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
-#               ,horizontalalignment='center', fontsize=16)
-# plt.legend(['Parkinsonian - DBS 130Hz', 'Normal'], fontsize=16)
-# plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
-# plt.ylabel('potential (uV)')
-# plt.xlabel('time (s)')
-# plt.show()
-
-# plt.figure(figsize=(30, 10))
-# plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_DBS_180_full)
-# # plt.plot(beta_waves_normal)
-# plt.annotate('begin DBS',xy=(50000,2000),xytext=(55000,2500),
-#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
-#               ,horizontalalignment='center', fontsize=16)
-# plt.annotate('end DBS',xy=(100000,2000),xytext=(105000,2500),
-#               arrowprops={'arrowstyle':'->', 'connectionstyle':'arc3,rad=0.3', 'color':"black"}
-#               ,horizontalalignment='center', fontsize=16)
-# plt.legend(['Parkinsonian - DBS 180Hz', 'Normal'], fontsize=16)
-# plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
-# plt.ylabel('potential (uV)')
-# plt.xlabel('time (s)')
-# plt.show()
-
-# plt.figure(figsize=(30, 10))
-# plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_PD, color="red")
-# plt.plot(beta_waves_DBS_180, color="steelblue")
-# plt.legend(['parkinsoniano', 'DBS - 180Hz'], fontsize=16)
-# plt.title(f'LFP filtrado - ${lowcut} - ${highcut}', fontsize=16)
-# plt.ylabel('potencial (uV)')
-# plt.xlabel('tempo (s)')
-# plt.show()
-
-# # from matplotlib import pyplot as plt
-# # import seaborn as sns
-# # sns.set()
-
-# x_arr = np.arange(0, 81, 5)
-
-# plt.figure(figsize=(21, 10))
-# plt.semilogy(f_PD, S_PD, color="steelblue")
-# plt.semilogy(f_normal, S_normal, color="darkorange")
-# plt.semilogy(f_DBS_80, S_DBS_80, color="green")
-# plt.semilogy(f_DBS_130, S_DBS_130, color="red")
-# plt.semilogy(f_DBS_180, S_DBS_180, color="hotpink")
-# plt.legend([ 'Parkinsonian', 'Normal', 'DBS - 80Hz', 'DBS - 130Hz', 'DBS - 180Hz'], fontsize=22)
-# plt.ylim([1e-3, 1e8])
-# plt.xlim([0, 80])
-# plt.xticks(x_arr)
-# plt.xlabel('frequency (Hz)')
-# plt.ylabel('PSD [V**2/Hz]')
-# plt.title('PSD', fontsize=22)
-# plt.show()
-
-# x_arr = np.arange(0, 81, 5)
-
-# plt.figure(figsize=(21, 10))
-# # plt.semilogy(f_PD, S_PD, color="steelblue")
-# # plt.semilogy(f_normal, S_normal, color="darkorange")
-# plt.semilogy(f_DBS_80_full, S_DBS_80_full, color="green")
-# plt.semilogy(f_DBS_130_full, S_DBS_130_full, color="red")
-# plt.semilogy(f_DBS_180_full, S_DBS_180_full, color="hotpink")
-# # plt.legend(['Parkinsonian', 'Normal', 'DBS - 80Hz', 'DBS - 130Hz', 'DBS - 180Hz'], fontsize=22)
-# plt.legend(['DBS 80Hz', 'DBS 130Hz', 'DBS 180Hz'], fontsize=22)
-# plt.ylim([1e-3, 1e8])
-# plt.xlim([0, 80])
-# plt.xticks(x_arr)
-# plt.xlabel('frequencia (Hz)')
-# plt.ylabel('PSD [V**2/Hz]')
-# plt.title('PSD', fontsize=22)
-# plt.show()
 
 
 

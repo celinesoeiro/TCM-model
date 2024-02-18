@@ -1,5 +1,5 @@
 from tcm_params import TCM_model_parameters, coupling_matrix_normal, coupling_matrix_PD
-from model_plots import plot_heat_map, layer_raster_plot, plot_raster, plot_BP_filter, plot_PSD
+from model_plots import plot_heat_map, layer_raster_plot, plot_raster, plot_BP_filter, plot_PSD, plot_BP_filter_normal
 from model_functions import LFP, butter_bandpass_filter, PSD
 
 from TR_nucleus import TR_nucleus
@@ -56,6 +56,12 @@ T = TCM_model_parameters()['simulation_time_ms']
 sim_steps = TCM_model_parameters()['simulation_steps']
 time_v = TCM_model_parameters()['time_vector']
 time = np.arange(1, sim_steps)
+
+lowcut = TCM_model_parameters()['beta_low']
+highcut = TCM_model_parameters()['beta_high']
+fs = TCM_model_parameters()['sampling_frequency']
+dbs_begin = TCM_model_parameters()['dbs_begin']
+dbs_end = TCM_model_parameters()['dbs_end']
 
 # =============================================================================
 # COUPLING MATRIXES
@@ -273,24 +279,20 @@ plot_raster(
 # =============================================================================
 print("-- Signal analysis")
 
-fs = TCM_model_parameters()['sampling_frequency']
-
 ## Getting the Local Field Potential
 LFP_D_normal = LFP(PSC_D[0], PSC_CI[0])
 
 ## Bandpass filtering the LFP to get the beta waves
-lowcut = 13
-highcut = 30
-LFP_normal = LFP_D_normal[49999:100000]
+LFP_normal = LFP_D_normal[dbs_begin:dbs_end]
 beta_waves_normal_full = butter_bandpass_filter(LFP_D_normal, lowcut, highcut, fs)
-plot_BP_filter(beta_waves_normal_full, lowcut, highcut)
+plot_BP_filter_normal(beta_waves_normal_full)
 
 # Power Spectral Density
 f_normal_full, S_normal_full = PSD(beta_waves_normal_full, fs)
 plot_PSD(f_normal_full, S_normal_full)
 
 beta_waves_normal = butter_bandpass_filter(LFP_normal, lowcut, highcut, fs)
-plot_BP_filter(beta_waves_normal, lowcut, highcut)
+plot_BP_filter_normal(beta_waves_normal)
 
 # Power Spectral Density
 f_normal, S_normal = PSD(beta_waves_normal, fs)

@@ -94,7 +94,11 @@ def TCM_model_parameters():
     dbs_on = int(5*67)                      # value of synaptic fidelity when DBS on
     dbs_off = 0                             # value of synaptic fidelity when DBS off
     dbs_amplitude = 1                       # 1 uA
-    dbs_freq = 80
+    dbs_freq = 130
+    lowcut = 13                             # beta band lower frequency
+    highcut = 30                            # beta band higher frequency
+    dbs_begin = int(sim_steps/3)            # position where DBS starts to be applied
+    dbs_end = int(dbs_begin*2)              # position where DBS stops being applied
         
     # Neuron quantities
     qnt_neurons_s = 10         # Excitatory
@@ -497,7 +501,11 @@ def TCM_model_parameters():
         'poisson_bg_activity': I_ps,
         'synaptic_fidelity_layers': synaptic_fidelity_layers,
         'dbs_amplitude': dbs_amplitude,
-        'dbs_freq': dbs_freq
+        'dbs_freq': dbs_freq,
+        'beta_low': lowcut,
+        'beta_high': highcut,
+        'dbs_begin' : dbs_begin,
+        'dbs_end': dbs_end,
         }
     
     return data

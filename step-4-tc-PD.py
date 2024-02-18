@@ -1,5 +1,5 @@
 from tcm_params import TCM_model_parameters, coupling_matrix_normal, coupling_matrix_PD
-from model_plots import plot_heat_map, plot_raster, plot_BP_filter, plot_PSD
+from model_plots import plot_heat_map, plot_raster, plot_BP_filter_normal, plot_PSD
 from model_functions import LFP, butter_bandpass_filter, PSD
 
 from TR_nucleus_PD import TR_nucleus
@@ -53,6 +53,12 @@ T = TCM_model_parameters()['simulation_time_ms']
 sim_steps = TCM_model_parameters()['simulation_steps']
 time_v = TCM_model_parameters()['time_vector']
 time = np.arange(1, sim_steps)
+
+lowcut = TCM_model_parameters()['beta_low']
+highcut = TCM_model_parameters()['beta_high']
+fs = TCM_model_parameters()['sampling_frequency']
+dbs_begin = TCM_model_parameters()['dbs_begin']
+dbs_end = TCM_model_parameters()['dbs_end']
 
 # =============================================================================
 # COUPLING MATRIXES
@@ -287,16 +293,14 @@ fs = TCM_model_parameters()['sampling_frequency']
 LFP_D_PD = LFP(PSC_D[0], PSC_CI[0])
 
 ## Bandpass filtering the LFP to get the beta waves
-lowcut = 13
-highcut = 30
 beta_waves_PD_full = butter_bandpass_filter(LFP_D_PD, lowcut, highcut, fs)
-plot_BP_filter(beta_waves_PD_full, lowcut, highcut)
+plot_BP_filter_normal(beta_waves_PD_full)
 
 # Power Spectral Density
 f_PD_full, S_PD_full = PSD(beta_waves_PD_full, fs)
 plot_PSD(f_PD_full, S_PD_full)
 
-PSD_signal_PD = LFP_D_PD[49999:100000]
+PSD_signal_PD = LFP_D_PD[dbs_begin:dbs_end]
 beta_waves_PD = butter_bandpass_filter(PSD_signal_PD, lowcut, highcut, fs)
 # Power Spectral Density
 f_DBS_PD, S_DBS_PD = PSD(beta_waves_PD, fs)
@@ -304,49 +308,4 @@ plot_PSD(f_DBS_PD, S_DBS_PD)
 
 print("-- Done!")
 
-# from matplotlib import pyplot as plt
-# import seaborn as sns
-# sns.set()
-
-# time_arr = np.arange(0, sim_steps + 1, fs, dtype=int)
-# xlabels = [f'{x/fs}' for x in time_arr]
-
-# plt.figure(figsize=(30, 10))
-# plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_PD)
-# plt.plot(beta_waves_normal)
-# plt.legend(['Parkinsoniano', 'Normal'], fontsize=16)
-# plt.title(f'LFP filtrado - ${lowcut} - ${highcut}', fontsize=16)
-# plt.ylabel('potencial (uV)')
-# plt.xlabel('tempo (s)')
-# plt.show()
-
-# time_arr = np.arange(0, sim_steps + 1, fs, dtype=int)
-# xlabels = [f'{x/fs}' for x in time_arr]
-
-# plt.figure(figsize=(30, 10))
-# plt.xticks(time_arr, labels=xlabels)
-# plt.plot(beta_waves_PD)
-# plt.plot(beta_waves_DBS)
-# plt.legend(['Parkinsoniano', 'DBS'], fontsize=16)
-# plt.title(f'LFP filtrado - ${lowcut} - ${highcut}', fontsize=16)
-# plt.ylabel('potencial (uV)')
-# plt.xlabel('tempo (s)')
-# plt.show()
-
-
-# x_arr = np.arange(0, 101, 5)
-
-# plt.figure(figsize=(21, 10))
-# plt.semilogy(f_PD, S_PD)
-# plt.semilogy(f, S)
-# plt.semilogy(f_DBS, S_DBS)
-# plt.legend(['Parkinsoniano', 'Normal', 'DBS'], fontsize=22)
-# plt.ylim([1e-3, 1e8])
-# plt.xlim([0, 100])
-# plt.xticks(x_arr)
-# plt.xlabel('frequencia (Hz)')
-# plt.ylabel('PSD [V**2/Hz]')
-# plt.title('PSD', fontsize=22)
-# plt.show()
 
