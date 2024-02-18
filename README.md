@@ -37,7 +37,7 @@ This model was accomplished in steps, that's why there are files named step-1-*,
 - Save changes in the tcm_params file and
 - Run the DBS file
 
-## Takes on signal analysis
-- To obtain the PSD comparison between normal, PD and DBS states you should use an IDE that allows variable storage, like [Spyder](https://www.spyder-ide.org/).
-- First you need to run the normal condition file, then the PD condition file, then you should run the DBS file.
+## Signal analysis
+- To obtain the PSD comparison between normal, PD and DBS states you should run the file signal_analysis
+- To obtain the PSD comparison between the DBS states you should run the file dbs_compare
 
