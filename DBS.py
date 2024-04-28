@@ -319,7 +319,7 @@ plot_LFP(LFP_D_DBS_130, 'LFP - 80Hz')
 PSD_signal_130 = LFP_D_DBS_130[dbs_begin:dbs_end]
 
 beta_waves_DBS_130_full = butter_bandpass_filter(LFP_D_DBS_130, lowcut, highcut, fs)
-plot_BP_filter(beta_waves_DBS_130_full, lowcut, highcut)
+plot_BP_filter(beta_waves_DBS_130_full, dbs_freq)
 f_DBS_130_full, S_DBS_130_full = PSD(beta_waves_DBS_130_full, fs)
 plot_PSD_DBS(f_DBS_130_full, S_DBS_130_full, dbs_freq)
 

@@ -7,6 +7,12 @@
 - Tsodkys and Markram synaptic model (tm_synapses folder)
 - Farokhniaee and Lowery Thalamo-Cortical model (step-4-* folders)
 
+## Installation instructions
+- In the requirements-conda.txt file you can find the necessary packages to create an environment to run the project
+- **OR** you can use the following command to install the necessary packages using pip command
+    
+    ``` !pip install numpy spicy matplotlib seaboard```
+
 ## How to use?
 There are 3 files which contains the model parameters and functions:
 - Model parameters (tcm_params file)

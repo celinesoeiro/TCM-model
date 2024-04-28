@@ -77,7 +77,7 @@ def plot_voltages(n_neurons, voltage, title, neuron_types):
     plt.show()
     
 def showPSD(signal, n):
-    (f, S) = scipy.signal.welch(signal[n], fs, nperseg=5*1024)
+    (f, S) = scipy.signal.welch(signal[n], fs)
     
     plt.semilogy(f, S)
     plt.ylim([1e-3, 1e2])

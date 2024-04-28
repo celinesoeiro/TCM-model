@@ -64,7 +64,7 @@ def TCM_model_parameters():
     
     ms = 1000                               # 1 second = 1000 miliseconds
     dt = 100/ms                             # time step of 10 ms
-    simulation_time = 3                    # simulation time in seconds
+    simulation_time = 15                    # simulation time in seconds
     samp_freq = int(ms/dt)                  # sampling frequency in Hz
     T = int((simulation_time)*ms)           # Simulation time in ms with 1 extra second to reach the steady state and trash later
     sim_steps = int(T/dt)                   # number of simulation steps
@@ -94,19 +94,19 @@ def TCM_model_parameters():
     dbs_on = int(5*67)                      # value of synaptic fidelity when DBS on
     dbs_off = 0                             # value of synaptic fidelity when DBS off
     dbs_amplitude = 1                       # 1 uA
-    dbs_freq = 130
+    dbs_freq = 150
     lowcut = 13                             # beta band lower frequency
     highcut = 30                            # beta band higher frequency
     dbs_begin = int(sim_steps/3)            # position where DBS starts to be applied
     dbs_end = int(dbs_begin*2)              # position where DBS stops being applied
         
     # Neuron quantities
-    qnt_neurons_s = 10         # Excitatory
-    qnt_neurons_m = 10         # Excitatory
-    qnt_neurons_d = 10         # Excitatory
-    qnt_neurons_ci = 10        # Inhibitory
-    qnt_neurons_tc = 10        # Excitatory
-    qnt_neurons_tr = 4         # Inhibitory
+    qnt_neurons_s = 100         # Excitatory
+    qnt_neurons_m = 100         # Excitatory
+    qnt_neurons_d = 100         # Excitatory
+    qnt_neurons_ci = 100        # Inhibitory
+    qnt_neurons_tc = 100        # Excitatory
+    qnt_neurons_tr = 40         # Inhibitory
     
     neuron_quantities = {
         'S': qnt_neurons_s,                      # Number of neurons in Superficial layer
