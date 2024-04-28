@@ -51,6 +51,8 @@ def plot_heat_map(matrix_normal, matrix_PD):
     ax2.xaxis.tick_top()
     ax2.set_title('parkinsonian condition')
     
+    plt.savefig('results/connection-matrix.png')
+    
     plt.show()
     
 def plot_voltages(n_neurons, voltage, title, neuron_types):
@@ -74,6 +76,7 @@ def plot_voltages(n_neurons, voltage, title, neuron_types):
         axs[row,column].set_title(f'neuron {i + 1} - {neuron_type}')
         axs[row,column].plot(voltage[i])
     
+    plt.savefig(f'results/{title}.png')
     plt.show()
     
 def showPSD(signal, n):
@@ -86,6 +89,7 @@ def showPSD(signal, n):
     plt.xlabel('frequency [Hz]')
     plt.ylabel('PSD [V**2/Hz]')
     plt.title(f'neuron - {n}')
+    plt.savefig('results/connection-matrix.png')
     plt.show()
     
 def plot_LFP(lfp, title):
@@ -101,6 +105,7 @@ def plot_LFP(lfp, title):
     plt.xlabel('Time')
     plt.ylabel('LFP')
     
+    plt.savefig(f'results/{title}.png')
     # Show the plot
     plt.show()
     
@@ -134,6 +139,7 @@ def plot_I_DBS(I, title):
     plt.ylabel('current (mA)')
     plt.xlabel('time (s)')
     plt.plot(I)
+    plt.savefig(f'results/{title}.png')
     plt.show()
     
 def plot_BP_filter(signal, dbs_freq):
