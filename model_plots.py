@@ -53,7 +53,7 @@ def plot_heat_map(matrix_normal, matrix_PD):
     
     plt.savefig('results/connection-matrix.png')
     
-    plt.show()
+    # plt.show()
     
 def plot_voltages(n_neurons, voltage, title, neuron_types):
     n_rows = int(n_neurons/2)
@@ -77,7 +77,7 @@ def plot_voltages(n_neurons, voltage, title, neuron_types):
         axs[row,column].plot(voltage[i])
     
     plt.savefig(f'results/{title}.png')
-    plt.show()
+    # plt.show()
     
 def showPSD(signal, n):
     (f, S) = scipy.signal.welch(signal[n], fs)
@@ -90,7 +90,7 @@ def showPSD(signal, n):
     plt.ylabel('PSD [V**2/Hz]')
     plt.title(f'neuron - {n}')
     plt.savefig('results/connection-matrix.png')
-    plt.show()
+    # plt.show()
     
 def plot_LFP(lfp, title):
     new_time= np.transpose(np.arange(len(lfp)))
@@ -107,7 +107,7 @@ def plot_LFP(lfp, title):
     
     plt.savefig(f'results/{title}.png')
     # Show the plot
-    plt.show()
+    # plt.show()
     
 def plot_LFPs(LFP_S, LFP_M, LFP_D, LFP_CI, LFP_TC, LFP_TR, title):
     new_time= np.transpose(np.arange(len(LFP_S)))
@@ -140,7 +140,7 @@ def plot_I_DBS(I, title):
     plt.xlabel('time (s)')
     plt.plot(I)
     plt.savefig(f'results/{title}.png')
-    plt.show()
+    # plt.show()
     
 def plot_BP_filter(signal, dbs_freq):
     x_offset = dbs_begin/2
@@ -161,14 +161,16 @@ def plot_BP_filter(signal, dbs_freq):
     plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
     plt.ylabel('potential (uV)')
     plt.xlabel('time (s)')
-    plt.show()
+    plt.savefig(f'results/LFP_bandpass_filtered-{lowcut}-{highcut}.png')
+    # plt.show()
     
 def plot_BP_filter_normal(signal):
     plt.figure(figsize=(30, 10))
     plt.xticks(time_arr, labels=xlabels)
     plt.title(f'LFP bandpass filtered - ${lowcut} - ${highcut}', fontsize=16)
     plt.plot(signal)
-    plt.show()
+    plt.savefig(f'results/LFP_bandpass_filtered-{lowcut}-{highcut}.png')
+    # plt.show()
     
 def plot_PSD_DBS(f, S, dbs_freq):
     x_arr = np.arange(0, 101, 10)
@@ -181,7 +183,8 @@ def plot_PSD_DBS(f, S, dbs_freq):
     plt.xlabel('frequency (Hz)')
     plt.ylabel('PSD [V**2/Hz]')
     plt.title(f'PSD - {dbs_freq}')
-    plt.show()
+    plt.savefig(f'results/PSD-{dbs_freq}.png')
+    # plt.show()
     
 def plot_PSD(f, S):
     x_arr = np.arange(0, 101, 10)
@@ -194,7 +197,8 @@ def plot_PSD(f, S):
     plt.xlabel('frequency (Hz)')
     plt.ylabel('PSD [V**2/Hz]')
     plt.title('PSD')
-    plt.show()
+    plt.savefig('results/PSD.png')
+    # plt.show()
     
 # =============================================================================
 # RASTER
@@ -225,7 +229,8 @@ def layer_raster_plot(n, AP, sim_steps, layer_name, dt):
     ax1.set_yticklabels(y_labels_vec)
     ax1.set_xlim(0, sim_steps)
     ax1.set_xticks(time_arr, labels=xlabels)
-    plt.show()
+    plt.savefig(f'results/Raster_plot-{layer_name}.png')
+    # plt.show()
     
 def plot_raster(
     sim_steps,
@@ -355,5 +360,6 @@ def plot_raster(
     # S neurons
     ax1.hlines(y = S_lim, xmin=0, xmax=sim_steps, color = 'gold', linestyle='solid' )
     ax1.hlines(y = S_RS_lim, xmin=0, xmax=sim_steps, color = 'khaki', linestyle='solid' )
-    plt.show()
+    plt.savefig('results/Raster_plot.png')
+    # plt.show()
     

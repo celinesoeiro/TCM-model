@@ -71,7 +71,7 @@ def TCM_model_parameters():
     chop_till = 1*samp_freq                 # Cut the first 1 seconds of the simulation
 
     td_synapse = 1                          # Synaptic transmission delay (fixed for all synapses in the TCM)
-    td_thalamus_cortex = 15                 # time delay from thalamus to cortex (ms) (transmission time delay)
+    td_thalamus_cortex = 3                 # time delay from thalamus to cortex (ms) (transmission time delay)
     td_cortex_thalamus = 20                 # time delay from cortex to thalamus (ms) (transmission time delay)  
     td_layers = 8                           # time delay between the layers in cortex and nuclei in thalamus (ms) (PSC delay)
     td_within_layers = 1                    # time delay within a structure (ms)
@@ -101,12 +101,12 @@ def TCM_model_parameters():
     dbs_end = int(dbs_begin*2)              # position where DBS stops being applied
         
     # Neuron quantities
-    qnt_neurons_s = 100         # Excitatory
-    qnt_neurons_m = 100         # Excitatory
-    qnt_neurons_d = 100         # Excitatory
-    qnt_neurons_ci = 100        # Inhibitory
-    qnt_neurons_tc = 100        # Excitatory
-    qnt_neurons_tr = 40         # Inhibitory
+    qnt_neurons_s = 10         # Excitatory
+    qnt_neurons_m = 10         # Excitatory
+    qnt_neurons_d = 10         # Excitatory
+    qnt_neurons_ci = 10        # Inhibitory
+    qnt_neurons_tc = 10        # Excitatory
+    qnt_neurons_tr = 4         # Inhibitory
     
     neuron_quantities = {
         'S': qnt_neurons_s,                      # Number of neurons in Superficial layer
