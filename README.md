@@ -11,7 +11,7 @@
 - In the requirements-conda.txt file you can find the necessary packages to create an environment to run the project
 - **OR** you can use the following command to install the necessary packages using pip command
     
-    ``` !pip install numpy spicy matplotlib seaboard```
+    ``` !pip install numpy spicy matplotlib seaboarn```
 
 ## How to use?
 There are 3 files which contains the model parameters and functions:
